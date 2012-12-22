@@ -4,8 +4,7 @@
  * SolusVM XMLRPC API Wrapper class
  *
  * Wrapper class for easy interfacing with your SolusVM Virtual Server Control Panel
- * allowing for simple integration of SolusVM functionality into your own applications. 
- * The SolusVM XMLRPC API provides for functionality that is not implemented below. 
+ * allowing for simple integration of SolusVM functionality into your own applications.
  *
  * @category   SolusVmWrapper
  * @package    Solus
@@ -17,7 +16,7 @@
 
 class Solus
 {
-  private $url;
+	private $url;
 	private $id;
 	private $key;
 
@@ -46,16 +45,16 @@ class Solus
 	 */
 	private function execute($action, array $params)
 	{
-		// add $param data to POST variables 
+		// add $param data to POST variables
 		foreach($params as $pKey => $pVal)
 		{
 			if(!is_int($pKey) && $pKey!="id" && $pKey!="key" && $pKey!="action")
 				$postfields[$pKey] = $pVal;
 		}
-		
+
 		$postfields["id"] = $this->id;
 		$postfields["key"] = $this->key;
-		$postfields["action"] = $action;		
+		$postfields["action"] = $action;
 
 		// Send request
 		$ch = curl_init();
