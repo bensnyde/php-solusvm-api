@@ -174,7 +174,7 @@ class Solus
 	 * @param        int
 	 * @return       str
 	 */
-	public function getVnc($serverID)
+	public function getVNC($serverID)
 	{
 		if(is_numeric($serverID))
 			return $this->execute("vserver-vnc", array("vserverid"=>$serverID));
