@@ -37,7 +37,7 @@ class Solus
 	}
 
 	/**
-	 * Executes specified SOAP action with given parameters
+	 * Executes xmlrpc action with given parameters
 	 *
 	 * @access       private
 	 * @param        str, array
