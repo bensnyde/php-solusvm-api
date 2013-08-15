@@ -1,13 +1,18 @@
 php-solusvm-api
 ===============
 
-<h3>SolusVM XMLRPC API PHP Library</h3>
-
-<p>Library class for easy interfacing with your <a href="http://www.solusvm.com">SolusVM Virtual Server Control Panel</a> allowing for simple integration of SolusVM functionality into your own applications.</p>
-
-<p>@filename solus.php<br />@author Benton Snyder<br />@link <a href="http://noumenaldesigns.com" alt="Noumenal Designs">http://noumenaldesigns.com</a></p>
-
-<p>Tested on SolusVM v1.12</p>
+/**<br />
+ * SolusVM XMLRPC API PHP Library<br />
+ *<br />
+ * PHP Library for easy integration of Solusvm <http://www.solusvm.com>.<br />
+ *<br />
+ * @category   PHP Libraries<br />
+ * @package    Solusvm<br />
+ * @author     Benton Snyder <introspectr3@gmail.com><br />
+ * @copyright  2012 Noumenal Designs<br />
+ * @license    GPLv3<br />
+ * @link       http://www.noumenaldesigns.com<br />
+ */<br />
 
 <h4>Usage</h4>
 
