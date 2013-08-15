@@ -1,10 +1,9 @@
 <?php
 
 /**
- * SolusVM XMLRPC API Wrapper class
+ * SolusVM XMLRPC API PHP Library
  *
- * Wrapper class for easy interfacing with your SolusVM Virtual Server Control Panel
- * allowing for simple integration of SolusVM functionality into your own applications.
+ * PHP Library for easy integration of Solusvm <http://www.solusvm.com>.
  *
  * @category   PHP Libraries
  * @package    Solusvm
