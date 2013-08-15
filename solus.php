@@ -10,7 +10,7 @@
  * @author     Benton Snyder <introspectr3@gmail.com>
  * @copyright  2012 Noumenal Designs
  * @license    GPLv3
- * @link       http://www.noumenaldesigns.com
+ * @website    Noumenal Designs <http://www.noumenaldesigns.com>
  */
 
 class Solus
