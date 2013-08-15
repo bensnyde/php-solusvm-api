@@ -6,11 +6,11 @@
  * Wrapper class for easy interfacing with your SolusVM Virtual Server Control Panel
  * allowing for simple integration of SolusVM functionality into your own applications.
  *
- * @category   SolusVmWrapper
- * @package    Solus
- * @author     Benton Snyder <noumenaldesigns@gmail.com>
+ * @category   PHP Libraries
+ * @package    Solusvm
+ * @author     Benton Snyder <introspectr3@gmail.com>
  * @copyright  2012 Noumenal Designs
- * @license    WTFPL
+ * @license    GPLv3
  * @link       http://www.noumenaldesigns.com
  */
 
