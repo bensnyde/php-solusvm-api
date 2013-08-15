@@ -1,8 +1,10 @@
 php-solusvm-api
 ===============
 
- * SolusVM XMLRPC API PHP Library
- * PHP Library for easy integration of Solusvm <http://www.solusvm.com>.
+SolusVM XMLRPC API PHP Library
+
+PHP Library for easy integration of Solusvm <http://www.solusvm.com>.
+
  * @category   PHP Libraries
  * @package    Solusvm
  * @author     Benton Snyder <introspectr3@gmail.com>
