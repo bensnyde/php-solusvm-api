@@ -1,286 +1,266 @@
 <?php
 
 /**
- * SolusVM XMLRPC API Wrapper class
+ * Zenoss XMLRPC API PHP Library
  *
- * Wrapper class for easy interfacing with your SolusVM Virtual Server Control Panel
- * allowing for simple integration of SolusVM functionality into your own applications.
+ * PHP library for easy interaction with your Zenoss Network Monitoring solution.
+ * Note, the Zenoss API has much more functionality than what is implemented below.
  *
- * @category   SolusVmWrapper
- * @package    Solus
+ * @category   PHP Libraries
+ * @package    Zenoss API
  * @author     Benton Snyder <noumenaldesigns@gmail.com>
- * @copyright  2012 Noumenal Designs
+ * @copyright  2013 Noumenal Designs
  * @license    WTFPL
  * @link       http://www.noumenaldesigns.com
  */
 
-class Solus
+class Zenoss
 {
-	private $url;
-	private $id;
-	private $key;
+        private $tmp;
+        private $protocol;
+        private $address;
+        private $port;
+        private $username;
+        private $password;
+        private $cookie;
 
-	/**
-	 * Public constructor
-	 *
-	 * @access 		public
-	 * @param
-	 * @return
-	 */
-	function __construct($url, $id, $key)
-	{
-		parent::__construct();
+        /**
+        * Public constructor
+        *
+        * @access       public
+        * @param        string $address
+        * @param        string $username
+        * @param        string $password
+        * @param        string $port
+        * @param        string $tmp
+        * @param        string $protocol
+        * @return
+        */
+        function __construct($address,$username,$password,$port='8080',$tmp='/tmp/',$protocol='http')
+        {
+                parent::__construct();
 
-		$this->url = $url;
-		$this->id = $id;
-		$this->key = $key;
-	}
+                $this->address = $address;
+                $this->username = $username;
+                $this->password = $password;
+                $this->port = $port;
+                $this->tmp = $tmp;
+                $this->protocol = $protocol;
+                $this->cookie = $tmp."zenoss_cookie.txt";
+        }
 
-	/**
-	 * Executes xmlrpc action with given parameters
-	 *
-	 * @access       private
-	 * @param        str, array
-	 * @return       str
-	 */
-	private function execute($action, array $params)
-	{
-		// add $param data to POST variables
-		foreach($params as $pKey => $pVal)
-		{
-			if(!is_int($pKey) && $pKey!="id" && $pKey!="key" && $pKey!="action")
-				$postfields[$pKey] = $pVal;
-		}
+        /**
+         * Queries Zenoss for requested data
+         *
+         * @access      private
+         * @param       array $data
+         * @param       string $uri
+         * @return      json array
+         */
+        private function zQuery(array $data, $uri)
+        {
+                // inject common variables to data container
+                $data['tid'] = 1;
+                $data['type'] = "rpc";
 
-		$postfields["id"] = $this->id;
-		$postfields["key"] = $this->key;
-		$postfields["action"] = $action;
+                // fetch authorization cookie
+                $ch = curl_init("{$this->protocol}://{$this->address}:{$this->port}/zport/acl_users/cookieAuthHelper/login");
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_USERPWD, "$this->username:$this->password");
+                curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8'));
+                curl_exec($ch);
 
-		// Send request
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $this->url . "/command.php");
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 20);
-		curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array("Expect:"));
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
-		$response = curl_exec($ch);
-		curl_close($ch);
+                // execute xmlrpc action
+                curl_setopt($ch, CURLOPT_URL, "{$this->protocol}://{$this->address}:{$this->port}{$uri}");
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                $result = curl_exec($ch);
 
-		return $response;
-	}
+                // cleanup
+                curl_close($ch);
+                return $result;
+        }
 
-	/**
-	 * Reboots specified vserver
-	 *
-	 * @access       public
-	 * @param        int
-	 * @return       str
-	 */
-	public function reboot($serverID)
-	{
-		if(is_numeric($serverID))
-			return $this->execute("vserver-reboot", array("vserverid"=>$serverID));
-	}
+        /**
+         * Retrieves a listing of Zenoss Device Collectors
+         *
+         * @access      public
+         * @param       string $deviceURI
+         * @return      json array
+         */
+        public function getDeviceCollectors($deviceURI)
+        {
+                $json_data = array();
+                $json_main = array();
 
-	/**
-	 * Boots specified vserver
-	 *
-	 * @access       public
-	 * @param        int
-	 * @return       str
-	 */
-	public function boot($serverID)
-	{
-		if(is_numeric($serverID))
-			return $this->execute("vserver-boot", array("vserverid"=>$serverID));
-	}
+                $json_main['action'] = "DeviceRouter";
+                $json_main['method'] = "getCollectors";
+                $json_main['data'] = $json_data;
 
-	/**
-	 * Shuts down specified vserver
-	 *
-	 * @access       public
-	 * @param        int
-	 * @return       str
-	 */
-	public function shutdown($serverID)
-	{
-		if(is_numeric($serverID))
-			return $this->execute("vserver-shutdown", array("vserverid"=>$serverID));
-	}
+                return $this->zQuery($json_main, $deviceURI.'/device_router');
+        }
 
-	/**
-	 * Retrives list of available ISO images
-	 *
-	 * @access       public
-	 * @param		 str
-	 * @return       str
-	 */
-	public function listISO($type)
-	{
-		$validType = array("xen hvm", "kvm");
-		if(in_array($type, $validType))
-			return $this->execute("listiso", array("type"=>$type));
-	}
+        /**
+         * Retrieves listing of Zenoss events for specified device
+         *
+         * @access      public
+         * @param       string $deviceURI
+         * @param       int $start
+         * @param       int $limit
+         * @param       string $sort
+         * @param       string $dir
+         * @return      json array
+         */
+        public function getDeviceEvents($deviceURI, $start=0, $limit=100, $sort="severity", $dir="DESC")
+        {
+                $json_params = array();
+                $json_data = array();
+                $json_main = array();
 
-	/**
-	 * Mounts ISO specified by its filename to vserver specified by ID
-	 *
-	 * @access       public
-	 * @param        int, str
-	 * @return       str
-	 */
-	public function mountISO($serverID, $iso)
-	{
-		if(is_numeric($serverID) && in_array($iso, $this->listISO()))
-			return $this->execute("vserver-mountiso", array("vserverid"=>$serverID, "iso"=>$iso));
-	}
+                $json_params['severity'] = array();
+                $json_params['eventState'] = array();
 
-	/**
-	 * Unmounts the currently mounted ISO of a vserver specified by its ID
-	 *
-	 * @access       public
-	 * @param        int
-	 * @return       str
-	 */
-	public function unmountISO($serverID)
-	{
-		if(is_numeric($serverID))
-			return $this->execute("vserver-unmountiso", array("vserverid"=>$serverID));
-	}
+                $json_data['start'] = $start;
+                $json_data['limit'] = $limit;
+                $json_data['dir'] = $dir;
+                $json_data['sort'] = $sort;
+                $json_data['params'] = $json_params;
 
-	/**
-	 * Updates the boot order of a vserver specified by its ID
-	 *
-	 * @access       public
-	 * @param        int, str
-	 * @return       str
-	 */
-	public function changeBootOrder($serverID, $bootOrder)
-	{
-		$validOrder = array("cd", "dc", "c", "d");
-		if(is_numeric($serverID) && in_array($bootOrder, $validOrder))
-			return $this->execute("vserver-bootorder", array("vserverid"=>$serverID, "bootorder"=>$bootOrder));
-	}
+                $json_main['action'] = "EventsRouter";
+                $json_main['method'] = "query";
+                $json_main['data'] = array($json_data);
 
-	/**
-	 * Retrieves VNC ip, port and password for vserver specified by its ID
-	 *
-	 * @access       public
-	 * @param        int
-	 * @return       str
-	 */
-	public function getVNC($serverID)
-	{
-		if(is_numeric($serverID))
-			return $this->execute("vserver-vnc", array("vserverid"=>$serverID));
-	}
+                return $this->zQuery($json_main, $deviceURI.'/evconsole_router');
+        }
 
-	/**
-	 * Retrieves details of vserver specified by its ID
-	 *
-	 * @access       public
-	 * @param        int
-	 * @return       str
-	 */
-	public function getServerInfo($serverID)
-	{
-		if(is_numeric($serverID))
-			return $this->execute("vserver-info", array("vserverid"=>$serverID));
-	}
+        /**
+         * Retrieves listing of components for specified Zenoss Device
+         *
+         * @access      public
+         * @param       string $deviceURI
+         * @param       int $start
+         * @param       int $limit
+         * @return      json array
+         */
+        public function getDeviceComponents($deviceURI, $start=0, $limit=50)
+        {
+                $json_keys = array();
+                $json_data = array();
+                $json_main = array();
 
-	/**
-	 * Retrieves server state information of vserver specified by its ID
-	 *
-	 * @access       public
-	 * @param        int
-	 * @return       str
-	 */
-	public function getServerState($serverID)
-	{
-		if(is_numeric($serverID))
-			return $this->execute("vserver-infoall", array("vserverid"=>$serverID));
-	}
+                $json_data['start'] = $start;
+                $json_data['limit'] = $limit;
+                $json_data['uid'] = $deviceURI;
+                $json_data['meta_type'] = "IpInterface";
+                $json_data['keys'] = $json_keys;
 
-	/**
-	 * Retrieves current status of vserver specified by ID
-	 *
-	 * @access       public
-	 * @param        int
-	 * @return       str
-	 */
-	public function getServerStatus($serverID)
-	{
-		if(is_numeric($serverID))
-			return $this->execute("vserver-status", array("vserverid"=>$serverID));
-	}
+                $json_main['action'] = "DeviceRouter";
+                $json_main['method'] = "getComponents";
+                $json_main['data'] = array($json_data);
 
-	/**
-	 * Authenticates client credentials
-	 *
-	 * @access       public
-	 * @param        str, str
-	 * @return       str
-	 */
-	public function authenticateClient($username, $password)
-	{
-		// TO DO: validate $username and $password
-		return $this->execute("client-authenticate", array("username"=>$username, "password"=>$password));
-	}
+                return $this->zQuery($json_main, $deviceURI.'/device_router');
+        }
 
-	/**
-	 * Updates hostname associated with vserver specified by its ID
-	 *
-	 * @access       public
-	 * @param        int, str
-	 * @return       str
-	 */
-	public function changeHostname($serverID, $hostname)
-	{
-		// TO DO: validate $hostname
-		if(is_numeric($serverID))
-			return $this->execute("vserver-hostname", array("vserverid"=>$serverID, "hostname"=>$hostname));
-	}
 
-	/**
-	 * Retrieves client list
-	 *
-	 * @access       public
-	 * @param
-	 * @return       str
-	 */
-	public function listClients()
-	{
-		return $this->execute("client-list");
-	}
+        /**
+         * Retrieves Zenoss device details
+         *
+         * @access      public
+         * @param       string $deviceURI
+         * @return      json array
+         */
+        public function getDeviceInfo($deviceURI)
+        {
+                $json_keys = array();
+                $json_data = array();
+                $json_main = array();
 
-	/**
-	 * Retrieves a list of virtual servers on specified node
-	 *
-	 * @access       public
-	 * @param		 int
-	 * @return       str
-	 */
-	public function listServers($nodeid)
-	{
-		if(is_int($nodeid))
-			return $this->execute("node-virtualservers", array("nodeid"=>$nodeid));
-	}
+                $json_keys = array("uptime", "firstSeen", "lastChanged", "lastCollected", "locking", "memory", "name", "productionState", "priority",
+                                "tagNumber", "serialNumber", "rackSlot", "collector","hwManufacturer","hwModel","osManufacturer","osModel","systems",
+                                "groups","location","links","comments","snmpSysName","snmpLocation","snmpContact","snmpDescr","snmpCommunity","snmpVersion");
 
-	/**
-	 * Determines if a vserver exists as specified by its ID
-	 *
-	 * @access       public
-	 * @param        int
-	 * @return       str
-	 */
-	public function vserverExists($serverID)
-	{
-		if(is_numeric($serverID))
-			return $this->execute("vserver-checkexists", array("vserverid"=>$serverID));
-	}
+                $json_data['keys'] = array($json_keys);
+                $json_data['uid'] = $deviceURI;
+
+                $json_main['action'] = "DeviceRouter";
+                $json_main['method'] = "getInfo";
+                $json_main['data'] = array($json_data);
+
+                return $this->zQuery($json_main, $deviceURI.'/getSubDevices');
+        }
+
+        /**
+         * Retrieves listing of Zenoss Devices
+         *
+         * @access      public
+         * @param       int $start
+         * @param       int $limit
+         * @param       string $sort
+         * @param       string $dir
+         * @return      json array
+         */
+        public function getDevices($start=0, $limit=100, $sort="name", $dir="ASC")
+        {
+                $json_params = array();
+                $json_data = array();
+                $json_main = array();
+
+                $json_data['dir'] = $dir;
+                $json_data['limit'] = $limit;
+                $json_data['sort'] = $sort;
+                $json_data['start'] = $start;
+                $json_data['params'] = $json_params;
+
+                $json_main['action'] = "DeviceRouter";
+                $json_main['method'] = "getDevices";
+                $json_main['data'] = $json_data;
+
+                return $this->zQuery($json_main, '/zport/dmd/Devices/getSubDevices');
+        }
+
+        /**
+         * Retrieves URL's for Zenoss Device Interface RRD graphs
+         *
+         * @access      public
+         * @param       string $deviceURI
+         * @param       string $interface
+         * @param       int $drange
+         * @return      json array
+         */
+        public function getDeviceInterfaceRRD($deviceURI, $interface, $drange=129600)
+        {
+                $json_data = array();
+                $json_main = array();
+
+                $json_data['uid'] = $interface;
+                $json_data['drange'] = $drange;
+
+                $json_main['action'] = "DeviceRouter";
+                $json_main['method'] = "getGraphDefs";
+                $json_main['data'] = array($json_data);
+
+                return $this->zQuery($json_main, $deviceURI.'/device_router');
+        }
+
+        /**
+         * Retrieves details on specified Zenoss Device Interface
+         *
+         * @access      public
+         * @param       string $deviceURI
+         * @param       string $interface
+         * @return      json array
+         */
+        public function getDeviceInterfaceDetails($deviceURI, $interface)
+        {
+                $json_data = array();
+                $json_main = array();
+
+                $json_data['uid'] = $interface;
+
+                $json_main['action'] = "DeviceRouter";
+                $json_main['method'] = "getForm";
+                $json_main['data'] = array($json_data);
+
+                return $this->zQuery($json_main, $deviceURI.'/device_router');
+        }
 }
