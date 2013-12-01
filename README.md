@@ -10,7 +10,7 @@ PHP Library for easy integration of Solusvm <http://www.solusvm.com>.
  * @author     Benton Snyder <introspectr3@gmail.com>
  * @copyright  2012 Noumenal Designs
  * @license    GPLv3
- * @website       Noumenal Designs <http://www.noumenaldesigns.com>
+ * @website    <http://www.noumenaldesigns.com>
 
 <h4>Usage</h4>
 
