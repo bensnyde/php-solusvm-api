@@ -69,7 +69,7 @@ class Solus
         $response = curl_exec($ch);
 
         // error handling
-        if($response ==== false)
+        if($response === false)
         	throw new Exception("Curl error: " . curl_error($ch));
 
         // cleanup
