@@ -3,10 +3,10 @@ php-solusvm-api
 
 PHP Library for SolusVM's XMLRPC API
 
-	https://documentation.solusvm.com/display/DOCS/API
+  <https://documentation.solusvm.com/display/DOCS/API>
 
  * @author     Benton Snyder
- * @website    http://www.bensnyde.me
+ * @website    <http://www.bensnyde.me>
  * @created    12/22/2012
  * @updated    4/2/2015
 
