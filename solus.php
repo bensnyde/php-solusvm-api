@@ -55,7 +55,6 @@ class Solus {
         $response = curl_exec($ch);
         curl_close($ch);
 
-
         if($response === false)
             throw new Exception("Curl error: " . curl_error($ch));
 
