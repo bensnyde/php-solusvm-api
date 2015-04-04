@@ -1,19 +1,19 @@
 php-solusvm-api
 ===============
 
-SolusVM XMLRPC API PHP Library
+PHP Library for SolusVM's XMLRPC API
 
-PHP Library for easy integration of Solusvm <http://www.solusvm.com>.
+	https://documentation.solusvm.com/display/DOCS/API
 
- * @category   PHP Libraries
- * @package    Solusvm
- * @author     Benton Snyder <introspectr3@gmail.com>
- * @copyright  2012 Noumenal Designs
- * @license    GPLv3
- * @website    <http://www.noumenaldesigns.com>
+ * @author     Benton Snyder
+ * @website    http://www.bensnyde.me
+ * @created    12/22/2012
+ * @updated    4/2/2015
 
-<h4>Usage</h4>
+##### Usage
 
- require('solus.php');<br />
- $solus = new Solus('https://solus.example.com:5656/api/admin', 'AFDi7342678A', 'SDFDJ83AF8AFA');<br />
- $clients = $solus->listClients();<br />
+```
+require('solus.php');
+$solus = new Solus('https://solus.example.com:5656/api/admin', 'AFDi7342678A', 'SDFDJ83AF8AFA');
+$clients = $solus->listClients();
+```
