@@ -62,6 +62,54 @@ class Solus {
     }
 
     /**
+     * Get serial console details
+     *
+     *  https://documentation.solusvm.com/display/DOCS/Serial+Console
+     */
+    public function console($serverID, $access, $time) {
+        if(!is_numeric($serverID))
+            throw new Exception("Invalid ServerID");
+
+        return $this->execute(array("action"=>"vserver-console", "vserverid"=>$serverID, "access"=>$access, "time"=>$time));
+    }
+
+    /**
+     * Disable TUN/TAP
+     *
+     *  https://documentation.solusvm.com/pages/viewpage.action?pageId=558494
+     */
+    public function disableTUN($serverID) {
+        if(!is_numeric($serverID))
+            throw new Exception("Invalid ServerID");
+
+        return $this->execute(array("action"=>"vserver-tun-disable", "vserverid"=>$serverID));
+    }
+
+    /**
+     * Enable TUN/TAP
+     *
+     *  https://documentation.solusvm.com/pages/viewpage.action?pageId=558498
+     */
+    public function enableTUN($serverID) {
+        if(!is_numeric($serverID))
+            throw new Exception("Invalid ServerID");
+
+        return $this->execute(array("action"=>"vserver-tun-enable", "vserverid"=>$serverID));
+    }
+
+    /**
+     * PAE Enable/Disable
+     *
+     *  https://documentation.solusvm.com/pages/viewpage.action?pageId=558505
+     */
+    public function paestatus($serverID, $pae) {
+        if(!is_numeric($serverID))
+            throw new Exception("Invalid ServerID");
+
+        return $this->execute(array("action"=>"vserver-pae", "vserverid"=>$serverID, "pae"=>$pae));
+    }
+
+    /**
      * Reboots specified vserver
      *
      *  https://documentation.solusvm.com/display/DOCS/Reboot+Virtual+Server
@@ -217,11 +265,11 @@ class Solus {
      * @param        int
      * @return       str
      */
-    public function getServerState($serverID) {
+    public function getServerState($serverID,$nostatus,$nographs) {
         if(!is_numeric($serverID))
             throw new Exception("Invalid ServerID");
 
-        return $this->execute(array("action"=>"vserver-infoall", "vserverid"=>$serverID));
+        return $this->execute(array("action"=>"vserver-infoall", "vserverid"=>$serverID, "nostatus"=>$nostatus, "nographs"=>$nographs));
     }
 
     /**
@@ -577,11 +625,11 @@ class Solus {
      * @param        str
      * @return       str
      */
-    public function listTemplates($type) {
+    public function listTemplates($type, $listpipefriendly) {
         if(!in_array($type, array("xen hvm", "kvm", "xen", "openvz")))
             throw new Exception("Invalid Type");
 
-        return $this->execute(array("action"=>"listtemplates", "type"=>$type));
+        return $this->execute(array("action"=>"listtemplates", "type"=>$type, "listpipefriendly"=>$listpipefriendly));
     }
 
     /**
