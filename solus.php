@@ -349,7 +349,7 @@ class Solus {
         if(!is_numeric($nodeid))
             throw new Exception("Invalid NodeID");
 
-        return $this->execute(array("action"=>"vserver-virtualservers", "nodeid"=>$nodeid));
+        return $this->execute(array("action"=>"node-virtualservers", "nodeid"=>$nodeid));
     }
 
     /**
