@@ -421,7 +421,7 @@ class Solus {
             if(filter_var($ipv4addr, FILTER_VALIDATE_IP) === false)
                 throw new Exception("Invalid IPv4 Address");
 
-	    if((filter_var($forceaddip, FILTER_VALIDATE_BOOLEAN) !== false) && (filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) !== true)){
+if((filter_var($forceaddip, FILTER_VALIDATE_BOOLEAN) !== false) && (filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) !== true))
                 throw new Exception("forceaddip must be boolean");
 
             $args['ipv4addr'] = $ipv4addr;
@@ -482,7 +482,7 @@ class Solus {
         if(!is_numeric($serverID))
             throw new Exception("Invalid ServerID");
 
-        if((filter_var($changeHDD, FILTER_VALIDATE_BOOLEAN) !== false) && (filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) !== true)){
+if((filter_var($changeHDD, FILTER_VALIDATE_BOOLEAN) !== false) && (filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) !== true))
             throw new Exception("changeHDD must be boolean");
 
         return $this->execute(array("action"=>"vserver-change", "vserverid"=>$serverID, "plan"=>$plan, "changehdd"=>$changeHDD));
@@ -501,7 +501,7 @@ class Solus {
         if(!is_numeric($serverID))
             throw new Exception("Invalid ServerID");
 
-	if((filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) !== false) && (filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) !== true))
+if((filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) !== false) && (filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) !== true))
             throw new Exception("deleteclient must be boolean");
 
         return $this->execute(array("action"=>"vserver-terminate", "vserverid"=>$serverID, "deleteclient"=>$deleteclient));
