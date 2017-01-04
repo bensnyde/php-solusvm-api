@@ -1,14 +1,16 @@
 <?php
 
 /**
- * PHP Library for SolusVM's XMLRPC API
+ * PHP Library for SolusVM's XMLRPC API - Updated Fork
  *
  *  https://documentation.solusvm.com/display/DOCS/API
  *
- * @author     Benton Snyder
- * @website    http://www.bensnyde.me
- * @created    12/22/2012
- * @updated    4/2/2015
+ * @author     Josh Wieder
+ * @website    https://consulting.joshwieder.net
+ * @updated    1/4/2017
+ *
+ * Original Author:  Benton Snyder
+ *
  */
 
 class Solus {
@@ -44,7 +46,7 @@ class Solus {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->url . "/command.php");
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 360);
         curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
@@ -53,11 +55,11 @@ class Solus {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
         $response = curl_exec($ch);
-        curl_close($ch);
 
         if($response === false)
             throw new Exception("Curl error: " . curl_error($ch));
 
+        curl_close($ch);
         return $response;
     }
 
@@ -337,6 +339,35 @@ class Solus {
     }
 
     /**
+     * Retrieves reseller list
+     *
+     *  https://documentation.solusvm.com/display/DOCS/List+Resellers
+     *
+     * @access       public
+     * @param
+     * @return       str
+     */
+    public function listResellers() {
+        return $this->execute(array("action"=>"reseller-list"));
+    }
+
+    /**
+     * Retrieves details of reseller specified by username
+     *
+     *  https://documentation.solusvm.com/display/DOCS/Reseller+Information
+     *
+     * @access       public
+     * @param        str
+     * @return       str
+     */
+    public function getResellerInfo($username) {
+        if(!ctype_alnum($username))
+            throw new Exception("Invalid Username");
+
+        return $this->execute(array("action"=>"reseller-info", "username"=>$username));
+    }   
+
+    /**
      * Retrieves a list of virtual servers on specified node
      *
      *  https://documentation.solusvm.com/display/DOCS/List+Virtual+Servers
@@ -390,7 +421,7 @@ class Solus {
             if(filter_var($ipv4addr, FILTER_VALIDATE_IP) === false)
                 throw new Exception("Invalid IPv4 Address");
 
-            if(filter_var($forceaddip, FILTER_VALIDATE_BOOLEAN) === false)
+	    if((filter_var($forceaddip, FILTER_VALIDATE_BOOLEAN) !== false) && (filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) !== true)){
                 throw new Exception("forceaddip must be boolean");
 
             $args['ipv4addr'] = $ipv4addr;
@@ -451,7 +482,7 @@ class Solus {
         if(!is_numeric($serverID))
             throw new Exception("Invalid ServerID");
 
-        if(filter_var($changeHDD, FILTER_VALIDATE_BOOLEAN) === false)
+        if((filter_var($changeHDD, FILTER_VALIDATE_BOOLEAN) !== false) && (filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) !== true)){
             throw new Exception("changeHDD must be boolean");
 
         return $this->execute(array("action"=>"vserver-change", "vserverid"=>$serverID, "plan"=>$plan, "changehdd"=>$changeHDD));
@@ -470,7 +501,7 @@ class Solus {
         if(!is_numeric($serverID))
             throw new Exception("Invalid ServerID");
 
-        if(filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) === false)
+	if((filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) !== false) && (filter_var($deleteclient, FILTER_VALIDATE_BOOLEAN) !== true))
             throw new Exception("deleteclient must be boolean");
 
         return $this->execute(array("action"=>"vserver-terminate", "vserverid"=>$serverID, "deleteclient"=>$deleteclient));
