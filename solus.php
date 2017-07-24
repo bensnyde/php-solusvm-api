@@ -6,9 +6,9 @@
  *  https://documentation.solusvm.com/display/DOCS/API
  *
  * @author     Benton Snyder
- * @website    http://www.bensnyde.me
+ * @website    https://www.bensnyde.me
  * @created    12/22/2012
- * @updated    4/2/2015
+ * @updated    7/24/2017
  */
 
 class Solus {
