@@ -53,11 +53,11 @@ class Solus {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
         $response = curl_exec($ch);
-        curl_close($ch);
 
         if($response === false)
             throw new Exception("Curl error: " . curl_error($ch));
 
+        curl_close($ch);
         return $response;
     }
 
