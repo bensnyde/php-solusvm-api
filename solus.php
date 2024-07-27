@@ -711,4 +711,17 @@ class Solus {
 
         return $this->execute(array("action"=>"listnodegroups", "type"=>$type));
     }
+    
+    /**
+     * List node statistics
+     *
+     *  https://documentation.solusvm.com/display/DOCS/Node+Statistics
+     *
+     * @access       public
+     * @param        int, str
+     * @return       str
+     */
+    public function getNodeStatistics($nodeid) {
+        return $this->execute(array("action"=>"node-statistics","nodeid"=>$nodeid));
+    }
 }
